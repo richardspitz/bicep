@@ -926,13 +926,8 @@ namespace Bicep.Core.TypeSystem
                     CollectErrors(errors, argumentType);
                 }
 
-                if (this.binder.GetSymbolInfo(syntax) is not Symbol foundSymbol)
-                {
-                    // namespace methods will have already been bound. Everything else will not have been.
-                    var resolvedSymbol = objectType.MethodResolver.TryGetSymbol(syntax.Name);
-
-                    foundSymbol = SymbolValidator.ResolveObjectQualifiedFunction(resolvedSymbol, syntax.Name, objectType);
-                }
+                var resolvedSymbol = objectType.MethodResolver.TryGetSymbol(syntax.Name);
+                var foundSymbol = SymbolValidator.ResolveObjectQualifiedFunction(resolvedSymbol, syntax.Name, objectType);
 
                 switch (foundSymbol)
                 {

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Bicep.Types.Az;
 using Bicep.Core.Extensions;
@@ -13,6 +14,7 @@ using Bicep.Core.Semantics;
 using Bicep.Core.Syntax;
 using Bicep.Core.Syntax.Visitors;
 using Bicep.Core.Text;
+using Bicep.Core.TypeSystem;
 using Bicep.Core.TypeSystem.Az;
 using Bicep.Core.UnitTests.Utils;
 using Bicep.LangServer.IntegrationTests.Assertions;
@@ -77,12 +79,15 @@ namespace Bicep.LangServer.IntegrationTests
                 },
                 accumulated => accumulated);
 
-            foreach (SyntaxBase symbolReference in symbolReferences)
+            foreach (var symbolReference in symbolReferences)
             {
+                // by default, request a hover on the first character of the syntax, but for certain syntaxes, this doesn't make sense.
+                // for example on an instance function call 'az.resourceGroup()', it only makes sense to request a hover on the 3rd character.
                 var nodeForHover = symbolReference switch
                 {
                     ITopLevelDeclarationSyntax d => d.Keyword,
                     ResourceAccessSyntax r => r.ResourceName,
+                    FunctionCallSyntaxBase f => f.Name,
                     _ => symbolReference,
                 };
 
@@ -107,15 +112,6 @@ namespace Bicep.LangServer.IntegrationTests
                         case SymbolKind.Function when symbolReference is VariableAccessSyntax:
                             // variable got bound to a function
                             hover.Should().BeNull();
-                            break;
-
-                        // when a namespace value is found and there was an error with the function call or
-                        // is a valid function call or namespace access, all these cases will have a hover range
-                        // with some text
-                        case SymbolKind.Error when symbolReference is InstanceFunctionCallSyntax:
-                        case SymbolKind.Function when symbolReference is InstanceFunctionCallSyntax:
-                        case SymbolKind.Namespace:
-                            ValidateInstanceFunctionCallHover(hover);
                             break;
 
                         case SymbolKind.Error:
@@ -229,25 +225,13 @@ namespace Bicep.LangServer.IntegrationTests
                     hover.Contents.MarkupContent.Value.Should().Contain($"{local.Name}: {local.Type}");
                     break;
 
+                case NamespaceSymbol @namespace:
+                    hover.Contents.MarkupContent.Value.Should().Contain($"{@namespace.Name} namespace");
+                    break;
+
                 default:
                     throw new AssertFailedException($"Unexpected symbol type '{symbol.GetType().Name}'");
             }
-        }
-
-        private static void ValidateInstanceFunctionCallHover(Hover? hover)
-        {
-            hover.Should().NotBeNull();
-            hover!.Range!.Should().NotBeNull();
-            hover.Contents.Should().NotBeNull();
-
-            hover.Contents.HasMarkedStrings.Should().BeFalse();
-            hover.Contents.HasMarkupContent.Should().BeTrue();
-            hover.Contents.MarkedStrings.Should().BeNull();
-            hover.Contents.MarkupContent.Should().NotBeNull();
-
-            hover.Contents.MarkupContent!.Kind.Should().Be(MarkupKind.Markdown);
-            hover.Contents.MarkupContent.Value.Should().StartWith("```bicep\n");
-            hover.Contents.MarkupContent.Value.Should().EndWith("```");
         }
 
         private static IEnumerable<object[]> GetData()
