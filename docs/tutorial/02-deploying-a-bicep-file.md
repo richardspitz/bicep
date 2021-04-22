@@ -42,6 +42,23 @@ New-AzResourceGroupDeployment -TemplateFile ./main.bicep -ResourceGroupName my-r
 
 Bicep supports providing all of the parameters for a template via a JSON file. There is no new "Bicep style" syntax for passing parameters. It is the same parameters file you would use for an ARM template deployment. You can take a look at [this parameters tutorial](https://docs.microsoft.com/azure/azure-resource-manager/templates/template-tutorial-use-parameter-file?tabs=azure-powershell) to learn how the parameters file is structured. 
 
+**Sample**:
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "westus2"
+    },
+    "storageAccountName": {
+      "value": "uniquelogstorage002"
+    }
+  }
+}
+```
+
 Once you have your parameters file, you can pass it to the deployment command-line tools:
 
 **Az CLI**:
