@@ -96,8 +96,6 @@ resource blob 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06
 output containerProps array = [for i in range(0, length(containerNames)): blob[i].id]
 ```
 
->**Note:** As of the 3/1/2021 with the 0.3 initial release, loops cannot be combined with conditions. The fix is being tracked with [#1667](https://github.com/Azure/bicep/issues/1667)
-
 ## Next steps
 
 In the next tutorial, we will learn how to consume our current Bicep file as a `module`:
