@@ -7,12 +7,14 @@ Bicep files can be directly deployed via the Az CLI or PowerShell Az module, so 
 **Az CLI**:
 
 ```bash
+az group create --name my-rg --location eastus
 az deployment group create -f ./main.bicep -g my-rg
 ```
 
 **Azure PowerShell**:
 
 ```powershell
+New-AzResourceGroup -Location eastus -Name my-rg
 New-AzResourceGroupDeployment -TemplateFile ./main.bicep -ResourceGroupName my-rg
 ```
 
