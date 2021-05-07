@@ -5,7 +5,7 @@ Since Bicep is a transparent abstraction of ARM templates, any resource that can
 ## Decompiling an ARM Template
 > Requires Bicep CLI v0.3.0 or later
  
-The Bicep CLI provides the ability to [decompile](../decompiling.md) any existing ARM Template to a `.bicep` file, using the `bicep decompile` command.
+The Bicep CLI provides the ability to [decompile](../decompiling.md) any existing ARM Template to a `.bicep` file, using the `az bicep decompile` command.
 
 Here's an example ARM Template that deploys a storage account.
 
@@ -45,7 +45,7 @@ Here's an example ARM Template that deploys a storage account.
 }
 ```
 
-Let's decompile the ARM template with `bicep decompile ".\storage.json"` and look at the output `.bicep` file.
+Let's decompile the ARM template with `bicep decompile -f ".\storage.json"` and look at the output `.bicep` file.
 
 ```
 param location string = resourceGroup().location
