@@ -45,7 +45,7 @@ Here's an example ARM Template that deploys a storage account.
 }
 ```
 
-Let's decompile the ARM template with `bicep decompile -f ".\storage.json"` and look at the output `.bicep` file.
+Let's decompile the ARM template with `az bicep decompile -f ".\storage.json"` and look at the output `.bicep` file.
 
 ```
 param location string = resourceGroup().location
